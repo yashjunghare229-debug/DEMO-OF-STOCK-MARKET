@@ -30,7 +30,7 @@ export default function Login() {
       });
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("user", JSON.stringify(res.data));
-      setMessage("✅ Login successful! Redirecting...");
+      setMessage("✅ Login successful! ");
       setTimeout(() => {
         window.location.href = "/user/home";
       }, 1500);
@@ -101,21 +101,22 @@ export default function Login() {
               Sign In
             </button>
             {message && (
-              <div className="d-flex justify-content-center align-items-center" style={{ minHeight: 60 }}>
-                <div
-                  className="text-center"
-                  style={{
-                    color: message.includes('✅') ? '#1de9b6' : '#d32f2f',
-                    fontWeight: 700,
-                    fontSize: 16,
-                    letterSpacing: 1,
-                    maxWidth: 400,
-                    display: 'inline-block',
-                    transition: 'all 0.2s',
-                  }}
-                >
-                  {message}
-                </div>
+              <div className="alert alert-success" style={{
+                position: 'fixed',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+                zIndex: 9999,
+                minWidth: 240,
+                textAlign: 'center',
+                fontSize: 18,
+                fontWeight: 500,
+                boxShadow: '0 2px 16px rgba(0,0,0,0.12)',
+                color: message.includes('\u2705') ? '#059669' : '#ef4444',
+                background: '#fff',
+                border: message.includes('\u2705') ? '1.5px solid #059669' : '1.5px solid #ef4444',
+              }}>
+                {message}
               </div>
             )}
           </form>

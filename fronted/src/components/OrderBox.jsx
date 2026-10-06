@@ -12,8 +12,8 @@ const OrderBox = ({ stock }) => {
   const [qty, setQty] = useState("");
   const [priceType, setPriceType] = useState("Market");
   const [limitPrice, setLimitPrice] = useState("");
-
   const [userHoldings, setUserHoldings] = useState(0);
+  const [orderMessage, setOrderMessage] = useState("");
 
   // ------------------------------------------------------------
   // ✅ FETCH USER HOLDINGS (BUY - SELL)
@@ -44,7 +44,8 @@ const OrderBox = ({ stock }) => {
   // ------------------------------------------------------------
   const handleBuySell = async () => {
     if (!user?._id) {
-      alert("User not logged in!");
+      setOrderMessage("❌ User not logged in!");
+      setTimeout(() => setOrderMessage(""), 2000);
       return;
     }
 
@@ -54,7 +55,8 @@ const OrderBox = ({ stock }) => {
         : Number(limitPrice);
 
     if (!tradedPrice || tradedPrice <= 0) {
-      alert("Price error");
+      setOrderMessage("❌ Price error");
+      setTimeout(() => setOrderMessage(""), 2000);
       return;
     }
 
@@ -63,12 +65,14 @@ const OrderBox = ({ stock }) => {
     // ------------------------------------------------------------
     if (activeTab === "SELL") {
       if (userHoldings <= 0) {
-        alert("❌ You do not have this stock to sell!");
+        setOrderMessage("❌ You do not have this stock to sell!");
+        setTimeout(() => setOrderMessage(""), 2000);
         return;
       }
 
       if (Number(qty) > userHoldings) {
-        alert(`❌ You only have ${userHoldings} shares`);
+        setOrderMessage(`❌ You only have ${userHoldings} shares`);
+        setTimeout(() => setOrderMessage(""), 2000);
         return;
       }
     }
@@ -94,24 +98,28 @@ const OrderBox = ({ stock }) => {
     const approxRequired = tradedPrice * Number(qty || 0);
     if (activeTab === "BUY") {
       if (!user || typeof user.balance === "undefined") {
-        alert("Please log in to trade");
+        setOrderMessage("❌ Please log in to trade");
+        setTimeout(() => setOrderMessage(""), 2000);
         return;
       }
       if (approxRequired > user.balance) {
-        alert("❌ Insufficient balance to place this buy order");
+        setOrderMessage("❌ Insufficient balance to place this buy order");
+        setTimeout(() => setOrderMessage(""), 2000);
         return;
       }
     }
 
     try {
       const res = await axios.post("http://localhost:5000/place/order", payload);
-      alert("Order placed successfully!");
+      setOrderMessage("✅ Order placed successfully!");
+      setTimeout(() => setOrderMessage(""), 2000);
       // update user's balance in context if backend returned it
       if (res.data && typeof res.data.balance !== "undefined") {
         setUser({ ...user, balance: res.data.balance });
       }
     } catch (err) {
-      alert(err.response?.data?.error || "Order failed");
+      setOrderMessage(err.response?.data?.error || "❌ Order failed");
+      setTimeout(() => setOrderMessage(""), 2000);
     }
   };
 
@@ -119,7 +127,27 @@ const OrderBox = ({ stock }) => {
   // UI SECTION (UNCHANGED)
   // ------------------------------------------------------------
   return (
-    <div className="second-card d-flex justify-content-center align-items-center mt-5">
+    <>
+      {orderMessage && (
+        <div className="alert alert-success" style={{
+          position: 'fixed',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          zIndex: 9999,
+          minWidth: 240,
+          textAlign: 'center',
+          fontSize: 18,
+          fontWeight: 500,
+          boxShadow: '0 2px 16px rgba(0,0,0,0.12)',
+          color: orderMessage.includes('✅') ? '#059669' : '#ef4444',
+          background: '#fff',
+          border: orderMessage.includes('✅') ? '1.5px solid #059669' : '1.5px solid #ef4444',
+        }}>
+          {orderMessage}
+        </div>
+      )}
+      <div className="second-card d-flex justify-content-center align-items-center mt-5">
       <div
         className="order-box p-4 rounded shadow-sm"
         style={{
@@ -224,6 +252,7 @@ const OrderBox = ({ stock }) => {
         </button>
       </div>
     </div>
+    </>
   );
 };
 

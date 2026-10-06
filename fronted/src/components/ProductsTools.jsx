@@ -35,7 +35,7 @@ export default function ProductsTools({ columnLayout, cardStyle }) {
   ];
 
   return (
-    <div className="products-tools-container" style={cardStyle}>
+    <div className="products-tools-container " style={cardStyle}>
       <h2 className="products-tools-title" style={{ fontSize: 22, marginBottom: 18, color: '#1E40AF', fontWeight: 800, letterSpacing: 0.5 }}>Products & Tools</h2>
       <div className="products-tools-list grid-layout">
         {items.map((item, idx) => (

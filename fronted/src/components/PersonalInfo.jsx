@@ -34,19 +34,20 @@ const PersonalInfo = () => {
   ];
 
   return (
-    <div className="profile-main">
-      <div className="profile-card" style={{ maxWidth: 900, margin: "0 auto" }}>
-        <h3 className="section-title text-center">Personal Information</h3>
+    <div className="profile-main" style={{ padding: "0" }}>
+      <div className="profile-card" style={{ maxWidth: "100%", padding: "0" }}>
+        <h3 className="section-title text-center mb-3" style={{ fontSize: "1.1rem" }}>Personal Information</h3>
 
-        <div className="row g-4 mt-3">
+        <div className="row g-2 g-md-3">
           {infoItems.map((item, index) => (
-            <div key={index} className="col-md-6">
+            <div key={index} className="col-12 col-sm-6">
               <div
-                className="d-flex align-items-center p-3 rounded-4"
+                className="d-flex align-items-center p-2 p-md-3 rounded-3"
                 style={{
                   background: "var(--accent)",
                   border: "1px solid rgba(13,110,253,0.06)",
                   transition: "transform 0.18s ease",
+                  minHeight: "70px",
                 }}
                 onMouseEnter={(e) =>
                   (e.currentTarget.style.transform = "scale(1.02)")
@@ -54,22 +55,23 @@ const PersonalInfo = () => {
                 onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
               >
                 <div
-                  className="me-3 d-flex align-items-center justify-content-center rounded-circle"
+                  className="me-2 me-md-3 d-flex align-items-center justify-content-center rounded-circle flex-shrink-0"
                   style={{
                     backgroundColor: "var(--primary)",
                     color: "#fff",
-                    width: "45px",
-                    height: "45px",
-                    fontSize: "1.1rem",
+                    width: "40px",
+                    height: "40px",
+                    fontSize: "1rem",
+                    minWidth: "40px",
                   }}
                 >
                   {item.icon}
                 </div>
-                <div>
-                  <p className="mb-1 text-secondary" style={{ fontSize: "0.9rem", fontWeight: "500" }}>
+                <div style={{ overflow: "hidden" }}>
+                  <p className="mb-1 text-secondary" style={{ fontSize: "0.8rem", fontWeight: "500", lineHeight: "1.2" }}>
                     {item.label}
                   </p>
-                  <p className="fw-semibold text-dark" style={{ fontSize: "1rem", marginBottom: 0 }}>
+                  <p className="fw-semibold text-dark" style={{ fontSize: "0.9rem", marginBottom: 0, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                     {item.value || "—"}
                   </p>
                 </div>

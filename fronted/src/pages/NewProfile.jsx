@@ -1,70 +1,69 @@
-// this is a simple navbar without fully screen toggle functionality
-// import React from "react";
-// import Sidebar from "../components/Sidebar";
-// import Navbar from "../components/Navbar";
-// import Watchlists from "../components/Watchlists";
-// import Profile from "./Profile";
-// export default function Watchlist() {
-    
-//   return (
-//     <div className="d-flex" style={{ backgroundColor: "#f4f9ff", minHeight: "100vh" }}>
-//       <Sidebar />
-//       <div className="flex-grow-1" style={{ marginLeft: "250px" }}>
-//         <Navbar />
-//         <div className="container py-4">
-//          <Profile/>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }
-
-
-
-
-
-
-
-// this is a layout with sidebar toggle functionality
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Sidebar from "../components/Sidebar";
 import Navbar from "../components/Navbar";
-import Watchlists from "../components/Watchlists";
 import Profile from "./Profile";
 import { useAuth } from "../context/AuthContext";
 
-export default function Watchlist() {
-  // Sidebar is hidden by default now
-  const [isSidebarVisible, setIsSidebarVisible] = useState(false);
+export default function NewProfile() {
+  const [isSidebarVisible, setIsSidebarVisible] = useState(true);
+  // const [isMobile, setIsMobile] = useState(window.innerWidth < 992);
   const { user } = useAuth();
-  const [windowWidth, setWindowWidth] = React.useState(window.innerWidth);
-  React.useEffect(() => {
-    const handleResize = () => setWindowWidth(window.innerWidth);
+
+  // const toggleSidebar = () => setIsSidebarVisible((prev) => !prev);
+  // const closeSidebar = () => setIsSidebarVisible(false);
+
+
+     const [isMobile, setIsMobile] = useState(window.innerWidth < 992);
+       const [sidebarOpen, setSidebarOpen] = useState(!isMobile);
+
+  // Handle responsive breakpoint
+  // useEffect(() => {
+  //   const handleResize = () => {
+  //     const mobile = window.innerWidth < 992;
+  //     setIsMobile(mobile);
+  //     if (!mobile) {
+  //       setIsSidebarVisible(true);
+  //     }
+  //   };
+  //   window.addEventListener('resize', handleResize);
+  //   return () => window.removeEventListener('resize', handleResize);
+  // }, []);
+
+
+  useEffect(() => {
+    const handleResize = () => {
+      const mobile = window.innerWidth < 992;
+      setIsMobile(mobile);
+      // On desktop, always show sidebar; on mobile, keep current state
+      if (!mobile) {
+        setSidebarOpen(true);
+      }
+    };
+    
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
-  const isMobile = windowWidth <= 900;
 
-  const toggleSidebar = () => setIsSidebarVisible((prev) => !prev);
+  const toggleSidebar = () => {
+    setSidebarOpen(prev => !prev);
+  };
+
+  const closeSidebar = () => {
+    setSidebarOpen(false);
+  };
+
+
+
 
   return (
-    <div
-      className="d-flex"
-      style={{ backgroundColor: "#f4f9ff", minHeight: "100vh" }}
-    >
-      {isSidebarVisible && <Sidebar />}
+    <div className="d-flex" style={{ backgroundColor: "var(--body-bg)", minHeight: "100vh" }}>
 
-        <div
-        className="flex-grow-1"
-        style={{
-          marginLeft: !isMobile && isSidebarVisible ? "250px" : "0",
-          transition: "margin-left 0.3s ease",
-        }}
-      >
-        {/* Navbar */}
+
+      <Sidebar isOpen={sidebarOpen} onClose={closeSidebar} isMobile={isMobile} />
+
+      <div className="flex-grow-1" style={{ marginLeft: !isMobile && isSidebarVisible ? "250px" : "0", transition: "margin-left 0.3s ease", backgroundColor: "var(--body-bg)", minHeight: "100vh", display: "flex", flexDirection: "column" }}>
         <Navbar toggleSidebar={toggleSidebar} />
-
-        <div className="container py-4">
+        <div className="container py-3 py-md-4 flex-grow-1">
           <Profile />
         </div>
       </div>

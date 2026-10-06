@@ -1,5 +1,3 @@
-// src/components/Navbar.jsx
-// this is a navbar with sidebar toggle functionality
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaBell, FaSearch, FaTimes, FaBars, FaRegNewspaper } from "react-icons/fa";
@@ -36,7 +34,6 @@ const Navbar = ({ toggleSidebar }) => {
   }, []);
 
   useEffect(() => {
-    // apply saved theme on mount
     try {
       const saved = localStorage.getItem("site-theme") || theme;
       applyTheme(saved);
@@ -80,7 +77,6 @@ const Navbar = ({ toggleSidebar }) => {
         "--sidebar-text": "#3b0764",
       },
       mocha: {
-        // user provided color (8-digit hex includes alpha). Converted to a background with similar transparency.
         "--nav-bg": "rgba(45,35,30,0.58)",
         "--nav-text": "#fff9f6",
         "--body-bg": "#fbf7f5",
@@ -90,7 +86,6 @@ const Navbar = ({ toggleSidebar }) => {
         "--search-text": "#000000",
         "--sidebar-text": "#2d1f1a",
       },
-      
       teal: {
         "--nav-bg": "#0d9488",
         "--nav-text": "#ffffff",
@@ -101,7 +96,6 @@ const Navbar = ({ toggleSidebar }) => {
         "--search-text": "#000000",
         "--sidebar-text": "#064e3b",
       },
-      // lighter Sunset
       sunset: {
         "--nav-bg": "#ff7a2a",
         "--nav-text": "#fff8f3",
@@ -127,54 +121,104 @@ const Navbar = ({ toggleSidebar }) => {
           color: "var(--nav-text, #fff)",
           height: "64px",
           zIndex: 1000,
-          position: "relative",
+          position: "sticky",
+          top: 0,
         }}
       >
-        <div className="container-fluid px-2 d-flex justify-content-between align-items-center">
-          <div className="d-flex align-items-center gap-2" style={{ flex: 1 }}>
-            {/* Toggle Sidebar button */}
+        <div className="container-fluid px-2 px-md-3 d-flex justify-content-between align-items-center">
+          {/* Left Section */}
+          <div className="d-flex align-items-center gap-2" style={{ flex: '0 0 auto' }}>
+            {/* Hamburger Toggle Button */}
             <button
-              className="btn btn-outline-light me-2"
+              className="btn btn-outline-light p-2"
               onClick={toggleSidebar}
-              style={{ padding: '6px 10px' }}
+              style={{ 
+                border: 'none',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+              aria-label="Toggle sidebar"
             >
-              <FaBars />
+              <FaBars size={18} />
             </button>
 
-            {/* Inline Search box */}
-            <input
-              type="text"
-              className="form-control serch border-0 shadow-none"
-              placeholder="Search stocks..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              onKeyDown={handleSearch}
-              style={{ fontSize: "0.95rem", width: "180px", maxWidth: '100%' }}
+            {/* Search - Hidden on mobile, opens overlay on click */}
+            <div className="d-none d-md-block">
+              <input
+                type="text"
+                className="form-control search-input border-0 shadow-none"
+                placeholder="Search stocks..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                onKeyDown={handleSearch}
+                style={{ 
+                  fontSize: "0.9rem", 
+                  width: "200px",
+                  background: "var(--search-bg, #fff)",
+                  color: "var(--search-text, #000)",
+                  borderRadius: "8px",
+                  padding: "6px 12px",
+                }}
+              />
+            </div>
+
+            {/* Search icon for mobile - opens full screen search */}
+            <button 
+              className="d-md-none btn p-1"
+              style={{ color: 'var(--nav-text, #fff)' }}
               onClick={() => setIsSearchOpen(true)}
-            />
+              aria-label="Search stocks"
+            >
+              <FaSearch size={18} />
+            </button>
 
             {/* News icon for mobile only */}
-            <Link to="/user/news" state={{ userInfo: user }} style={{ textDecoration: "none" }}>
-              <span className="d-block d-lg-none ms-2">
-                <FaRegNewspaper style={{ fontSize: "1.3rem", cursor: "pointer", color: 'var(--nav-text, #fff)' }} />
+            <Link 
+              to="/user/news" 
+              state={{ userInfo: user }} 
+              style={{ textDecoration: "none" }}
+              className="d-md-none"
+            >
+              <span className="text-white">
+                <FaRegNewspaper size={20} />
               </span>
             </Link>
           </div>
 
-          {/* Right section */}
-          <div className="d-flex align-items-center gap-2 " style={{ flex: 1, justifyContent: 'flex-end' }}>
-            <span className="d-none d-lg-block">
+          {/* Right Section */}
+          <div className="d-flex align-items-center gap-2" style={{ flex: '0 0 auto' }}>
+            {/* Bell icon - desktop only */}
+            <span className="d-none d-md-block">
               <Link to="/user/news" state={{ userInfo: user }} style={{ textDecoration: "none" }}>
-                <FaBell style={{ fontSize: "1.3rem", cursor: "pointer", color: 'var(--nav-text, #fff)' }} />
+                <FaBell size={18} style={{ cursor: "pointer", color: 'var(--nav-text, #fff)' }} />
               </Link>
             </span>
-            <div className="bg-light text-primary fw-bold d-flex align-items-center justify-content-center rounded-circle" style={{ width: "36px", height: "36px" }}>
-             <Link to="/user/profile" style={{ textDecoration: "none", color: "inherit" }}>
-              {user?.username ? user.username.charAt(0).toUpperCase() : "U"}
-            </Link>
-            </div>
+            
+            {/* User Avatar */}
             <Link to="/user/profile" style={{ textDecoration: "none" }}>
-              <span className="fw-semibold d-none d-lg-block" style={{ cursor: "pointer", color: 'var(--nav-text, #fff)' }}>
+              <div 
+                className="bg-light text-primary fw-bold d-flex align-items-center justify-content-center rounded-circle" 
+                style={{ 
+                  width: "36px", 
+                  height: "36px",
+                  minWidth: "36px",
+                }}
+              >
+                {user?.username ? user.username.charAt(0).toUpperCase() : "U"}
+              </div>
+            </Link>
+            
+            {/* Username - desktop only */}
+            <Link to="/user/profile" style={{ textDecoration: "none" }}>
+              <span 
+                className="fw-semibold d-none d-md-block" 
+                style={{ 
+                  cursor: "pointer", 
+                  color: 'var(--nav-text, #fff)',
+                  fontSize: '0.9rem',
+                }}
+              >
                 {user?.username || "Guest User"}
               </span>
             </Link>
@@ -182,29 +226,34 @@ const Navbar = ({ toggleSidebar }) => {
         </div>
       </nav>
 
+      {/* Full-screen search overlay for mobile */}
       {isSearchOpen && (
         <div
           className="position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center"
-          style={{ backgroundColor: "rgba(0, 0, 0, 0.8)", zIndex: 2000, transition: "all 0.3s ease" }}
+          style={{ backgroundColor: "rgba(0, 0, 0, 0.85)", zIndex: 2000, transition: "all 0.3s ease" }}
           onClick={() => setIsSearchOpen(false)}
         >
           <div
-            className="bg-white rounded-pill shadow-lg d-flex align-items-center px-4"
-            style={{ width: "60%", maxWidth: "600px", height: "60px", transition: "all 0.3s ease" }}
+            className="bg-white rounded-4 shadow-lg d-flex align-items-center px-4"
+            style={{ width: "90%", maxWidth: "500px", height: "56px", transition: "all 0.3s ease" }}
             onClick={(e) => e.stopPropagation()}
           >
-            <FaSearch className="text-muted me-3" />
+            <FaSearch className="text-muted me-3" size={18} />
             <input
               type="text"
               className="form-control border-0 shadow-none"
-              placeholder="Search stocks..."
+              placeholder="Search stocks (e.g. RELIANCE, TATASTEEL)..."
               value={search}
               autoFocus
               onChange={(e) => setSearch(e.target.value)}
               onKeyDown={handleSearch}
-              style={{ fontSize: "1.2rem" }}
+              style={{ fontSize: "1rem", color: "#000" }}
             />
-            <FaTimes className="text-muted ms-3" style={{ cursor: "pointer" }} onClick={() => setIsSearchOpen(false)} />
+            <FaTimes 
+              className="text-muted ms-2" 
+              style={{ cursor: "pointer", fontSize: "1.2rem" }} 
+              onClick={() => setIsSearchOpen(false)} 
+            />
           </div>
         </div>
       )}
@@ -213,5 +262,3 @@ const Navbar = ({ toggleSidebar }) => {
 };
 
 export default Navbar;
-
-

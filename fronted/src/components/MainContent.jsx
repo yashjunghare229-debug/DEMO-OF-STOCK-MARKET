@@ -273,22 +273,23 @@ const MainContent = ({ user }) => {
 
   return (
     <div className="d-flex" style={{ backgroundColor: "#f4f9ff", minHeight: "100vh" }}>
-      <div className="container-fluid py-4">
+      <div className="container-fluid py-3 px-2 px-md-4">
         {/* Welcome Section */}
-        <div className="card border-0 shadow-sm mb-4">
-          <div className="card-body d-flex justify-content-between align-items-center">
+        <div className="card border-0 shadow-sm mb-3 mb-md-4">
+          <div className="card-body p-3 p-md-4 d-flex justify-content-between align-items-center">
             <div>
-              <h5 className="fw-bold mb-1">
+              <h5 className="fw-bold mb-1" style={{ fontSize: '1.5rem' }}>
                 Welcome back <span className="text-primary">{user?.username}</span>
               </h5>
-              <p className="text-muted mb-0">Track and manage your investments efficiently</p>
+              <p className="text-muted mb-0" style={{ fontSize: '1rem' }}>Track and manage your investments efficiently</p>
             </div>
-            <button className="btn btn-primary fw-semibold rounded-pill px-4">+ Add Funds</button>
           </div>
         </div>
 
+        {/* Stats
         {/* Stats Cards */}
         <div className="row g-3 mb-4">
+          {/* Responsive stats grid - 1 col on mobile, 2 on tablet, 4 on desktop */}
           {[
             {
               title: "Total Portfolio Value",
@@ -320,8 +321,8 @@ const MainContent = ({ user }) => {
               icon: <FaChartLine />, color: "danger"
             }
           ].map((item, idx) => (
-            <div key={idx} className="col-md-3">
-              <div className="bg-white rounded-4 shadow-sm p-4 h-100">
+            <div key={idx} className="col-12 col-sm-6 col-lg-3">
+              <div className="bg-white rounded-4 shadow-sm p-3 p-md-4 h-100">
                 <div className="d-flex justify-content-between align-items-start">
                   <div>
                     <p className="text-secondary small mb-1">{item.title}</p>
@@ -344,16 +345,6 @@ const MainContent = ({ user }) => {
             <div className="bg-white rounded-4 shadow-sm p-4 position-relative">
               <div className="d-flex justify-content-between align-items-center mb-4">
                 <h5 className="fw-bold mb-0">Market Overview</h5>
-                {/* <div className="d-flex gap-2">
-                  <select className="form-select form-select-sm bg-light border-0 rounded-3">
-                    <option>1D</option>
-                    <option>1W</option>
-                    <option selected>1M</option>
-                    <option>3M</option>
-                    <option>1Y</option>
-                  </select>
-                </div> */}
-                {/* Maximize/Minimize Chart Button */}
                 <button
                   className="btn btn-outline-secondary btn-sm ms-2"
                   style={{ position: 'absolute', top: 16, right: 16, zIndex: 2 }}

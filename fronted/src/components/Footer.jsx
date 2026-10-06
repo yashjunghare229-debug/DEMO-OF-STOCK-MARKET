@@ -10,6 +10,7 @@ import {
 const Footer = () => {
   return (
     <footer
+      className="d-none d-md-block"
       style={{
         width: "100vw",
         background: "linear-gradient(180deg, #f2f4f7 0%, #e9ecef 100%)",
@@ -41,27 +42,18 @@ const Footer = () => {
           <div className="col-md-3">
             <h5 className="fw-semibold text-primary mb-3">Quick Links</h5>
             <ul className="list-unstyled" style={{ fontSize: "17px" }}>
-              {[
-                ["Home", "/dashboard"],
-                ["Watchlist", "/watchlist"],
-                ["Portfolio", "/portfolio"],
-                ["Market News", "/news"],
-              ].map(([name, link]) => (
-                <li key={name} className="mb-2">
-                  <a
-                    href={link}
-                    className="text-secondary text-decoration-none"
-                    style={{
-                      transition: "color 0.3s",
-                      color: "#475569",
-                    }}
-                    onMouseEnter={(e) => (e.target.style.color = "#0d6efd")}
-                    onMouseLeave={(e) => (e.target.style.color = "#475569")}
-                  >
-                    {name}
-                  </a>
-                </li>
-              ))}
+              <li className="mb-2">
+                <a href="/dashboard" className="text-secondary text-decoration-none" style={{ transition: "color 0.3s", color: "#475569" }} onMouseEnter={(e) => (e.target.style.color = "#0d6efd")} onMouseLeave={(e) => (e.target.style.color = "#475569")}>Home</a>
+              </li>
+              <li className="mb-2">
+                <a href="/watchlist" className="text-secondary text-decoration-none" style={{ transition: "color 0.3s", color: "#475569" }} onMouseEnter={(e) => (e.target.style.color = "#0d6efd")} onMouseLeave={(e) => (e.target.style.color = "#475569")}>Watchlist</a>
+              </li>
+              <li className="mb-2">
+                <a href="/portfolio" className="text-secondary text-decoration-none" style={{ transition: "color 0.3s", color: "#475569" }} onMouseEnter={(e) => (e.target.style.color = "#0d6efd")} onMouseLeave={(e) => (e.target.style.color = "#475569")}>Portfolio</a>
+              </li>
+              <li className="mb-2">
+                <a href="/news" className="text-secondary text-decoration-none" style={{ transition: "color 0.3s", color: "#475569" }} onMouseEnter={(e) => (e.target.style.color = "#0d6efd")} onMouseLeave={(e) => (e.target.style.color = "#475569")}>Market News</a>
+              </li>
             </ul>
           </div>
 
@@ -69,18 +61,12 @@ const Footer = () => {
           <div className="col-md-3">
             <h5 className="fw-semibold text-primary mb-3">Our Products</h5>
             <ul className="list-unstyled" style={{ fontSize: "17px" }}>
-              {[
-                "Stock Analysis Tool",
-                "Real-time Market Data",
-                "Portfolio Tracker",
-                "ETF Explorer",
-                "IPO Insights",
-                "Mutual Funds",
-              ].map((item) => (
-                <li key={item} className="mb-2 text-secondary">
-                  {item}
-                </li>
-              ))}
+              <li className="mb-2 text-secondary">Stock Analysis Tool</li>
+              <li className="mb-2 text-secondary">Real-time Market Data</li>
+              <li className="mb-2 text-secondary">Portfolio Tracker</li>
+              <li className="mb-2 text-secondary">ETF Explorer</li>
+              <li className="mb-2 text-secondary">IPO Insights</li>
+              <li className="mb-2 text-secondary">Mutual Funds</li>
             </ul>
           </div>
 
@@ -88,25 +74,18 @@ const Footer = () => {
           <div className="col-md-3">
             <h5 className="fw-semibold text-primary mb-3">Connect with Us</h5>
             <div className="d-flex gap-4 fs-3">
-              {[
-                ["https://twitter.com", <FaTwitter />],
-                ["https://linkedin.com", <FaLinkedin />],
-                ["https://instagram.com", <FaInstagram />],
-                ["https://youtube.com", <FaYoutube />],
-              ].map(([link, icon], i) => (
-                <a
-                  key={i}
-                  href={link}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="text-secondary"
-                  style={{ transition: "color 0.3s" }}
-                  onMouseEnter={(e) => (e.target.style.color = "#0d6efd")}
-                  onMouseLeave={(e) => (e.target.style.color = "#475569")}
-                >
-                  {icon}
-                </a>
-              ))}
+              <a href="https://twitter.com" target="_blank" rel="noreferrer" className="text-secondary" style={{ transition: "color 0.3s" }} onMouseEnter={(e) => (e.target.style.color = "#0d6efd")} onMouseLeave={(e) => (e.target.style.color = "#475569")}>
+                <FaTwitter />
+              </a>
+              <a href="https://linkedin.com" target="_blank" rel="noreferrer" className="text-secondary" style={{ transition: "color 0.3s" }} onMouseEnter={(e) => (e.target.style.color = "#0d6efd")} onMouseLeave={(e) => (e.target.style.color = "#475569")}>
+                <FaLinkedin />
+              </a>
+              <a href="https://instagram.com" target="_blank" rel="noreferrer" className="text-secondary" style={{ transition: "color 0.3s" }} onMouseEnter={(e) => (e.target.style.color = "#0d6efd")} onMouseLeave={(e) => (e.target.style.color = "#475569")}>
+                <FaInstagram />
+              </a>
+              <a href="https://youtube.com" target="_blank" rel="noreferrer" className="text-secondary" style={{ transition: "color 0.3s" }} onMouseEnter={(e) => (e.target.style.color = "#0d6efd")} onMouseLeave={(e) => (e.target.style.color = "#475569")}>
+                <FaYoutube />
+              </a>
             </div>
           </div>
         </div>
@@ -116,12 +95,9 @@ const Footer = () => {
 
         {/* Bottom Section */}
         <div className="text-center text-muted" style={{ fontSize: "15px" }}>
-          © {new Date().getFullYear()} <strong>StockMarket Pro</strong> — Built
-          for modern investors using NSE & BSE data.
+          © {new Date().getFullYear()} <strong>StockMarket Pro</strong> — Built for modern investors using NSE & BSE data.
           <br />
-          <span style={{ color: "#64748b" }}>
-            Designed with ❤️ for the demo trading community.
-          </span>
+          <span style={{ color: "#64748b" }}>Designed with ❤️ for the demo trading community.</span>
         </div>
       </div>
     </footer>

@@ -22,32 +22,12 @@ import Home from "./pages/Home";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AppRoutes from "./routes/AppRoutes";
 import "bootstrap/dist/css/bootstrap.min.css";
-
 function App() {
   return (
-    // <Router>
-    //   <Routes>
-    //     {/* Public routes */}
-    //     <Route path="/login" element={<Login />} />
-
-    //     {/* Protected routes */}
-    //     <Route
-    //       path="/home"
-    //       element={
-    //         <ProtectedRoute>
-    //           <Home />
-    //         </ProtectedRoute>
-            
-    //       }
-    //     />
-    //   </Routes>
-    // </Router>
-
-<React.StrictMode>
-    <AppRoutes />
-  </React.StrictMode>
+    <React.StrictMode>
+      <AppRoutes />
+    </React.StrictMode>
 
   );
 }
-
 export default App;

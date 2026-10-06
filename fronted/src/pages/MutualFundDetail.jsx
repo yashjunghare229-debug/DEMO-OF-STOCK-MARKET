@@ -411,8 +411,8 @@ export default function MutualFundDetail() {
         className="funds-grid"
         style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(2, 1fr)',
-          gap: '32px 28px',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 400px), 1fr))',
+          gap: '24px',
           alignItems: 'stretch',
           marginBottom: 32,
         }}

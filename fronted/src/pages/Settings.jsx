@@ -1,54 +1,68 @@
-// import React from "react";
-// import Sidebar from "../components/Sidebar";
-// import Navbar from "../components/Navbar";
-
-// export default function Settings() {
-//   return (
-//     <div className="d-flex" style={{ backgroundColor: "#f4f9ff", minHeight: "100vh" }}>
-//       <Sidebar />
-//       <div className="flex-grow-1" style={{ marginLeft: "250px" }}>
-//         <Navbar />
-//         <div className="container py-4">
-//           <div className="card shadow-sm border-0 p-4">
-//             <h3 className="fw-bold text-primary mb-3">Market Overview</h3>
-//             <p className="text-muted">
-//              hey hello we are on the Setting page 
-//             </p>
-
-//             <div className="text-center mt-4">
-//               <img
-//                 src="https://placehold.co/900x400?text=Market+Overview+Graph"
-//                 alt="Market Overview"
-//                 className="img-fluid rounded-3 shadow-sm"
-//               />
-//             </div>
-//           </div>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }
-
-
-
-
-
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import Navbar from "../components/Navbar";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useAuth } from "../context/AuthContext";
-import TradingViewWidget from "../components/TradingViewWidget";
-import { closeAccount } from "../api/closeAccount";
+
 export default function Settings() {
   const [isSidebarVisible, setIsSidebarVisible] = useState(true);
-  const toggleSidebar = () => setIsSidebarVisible((prev) => !prev);
+  // const [isMobile, setIsMobile] = useState(window.innerWidth < 992);
   const { user } = useAuth();
   const [theme, setTheme] = useState(() => {
     return localStorage.getItem("site-theme") || "default";
   });
   const navigate = useNavigate();
+
+  // const toggleSidebar = () => setIsSidebarVisible((prev) => !prev);
+  // const closeSidebar = () => setIsSidebarVisible(false);
+
+
+   const [isMobile, setIsMobile] = useState(window.innerWidth < 992);
+     const [sidebarOpen, setSidebarOpen] = useState(!isMobile);
+
+  // Handle responsive breakpoint
+  // useEffect(() => {
+  //   const handleResize = () => {
+  //     const mobile = window.innerWidth < 992;
+  //     setIsMobile(mobile);
+  //     if (!mobile) {
+  //       setIsSidebarVisible(true);
+  //     }
+  //   };
+  //   window.addEventListener('resize', handleResize);
+  //   return () => window.removeEventListener('resize', handleResize);
+  // }, []);
+
+
+
+
+  // Handle responsive breakpoint
+  useEffect(() => {
+    const handleResize = () => {
+      const mobile = window.innerWidth < 992;
+      setIsMobile(mobile);
+      // On desktop, always show sidebar; on mobile, keep current state
+      if (!mobile) {
+        setSidebarOpen(true);
+      }
+    };
+    
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const toggleSidebar = () => {
+    setSidebarOpen(prev => !prev);
+  };
+
+  const closeSidebar = () => {
+    setSidebarOpen(false);
+  };
+
+
+
+
 
   function applyTheme(name) {
     const root = document.documentElement;
@@ -118,44 +132,31 @@ export default function Settings() {
     Object.entries(picked).forEach(([k, v]) => root.style.setProperty(k, v));
   }
 
-  React.useEffect(() => {
+  useEffect(() => {
     const saved = localStorage.getItem("site-theme") || theme;
     applyTheme(saved);
   }, []);
 
-  React.useEffect(() => {
+  useEffect(() => {
     applyTheme(theme);
   }, [theme]);
 
-  // Go back to previous page
-  const handleBack = () => {
-    navigate(-1);
-  };
-
-  // Example: Go to home/dashboard page
-  const handleGoHome = () => {
-    navigate("/home");
-  };
-
   return (
-    <div className="d-flex " style={{flexDirection:"column", backgroundColor: "var(--body-bg, #f4f9ff)", minHeight: "100vh" }}>
-      {isSidebarVisible && <Sidebar />}
-      <div
-        className="flex-grow-1"
-        style={{
-          marginLeft: isSidebarVisible ? "250px" : "0",
-          transition: "margin-left 0.3s ease",
-          backgroundColor: "var(--body-bg, #f4f9ff)",
-        }}
-      >
-        {/* Navbar */}
+    <div className="d-flex" style={{ backgroundColor: "var(--body-bg, #f4f9ff)", minHeight: "100vh" }}>
+    
+
+      <Sidebar  isOpen={sidebarOpen}
+        onClose={closeSidebar}
+        isMobile={isMobile} />
+
+      <div className="flex-grow-1" style={{ marginLeft: !isMobile && isSidebarVisible ? "250px" : "0", transition: "margin-left 0.3s ease", backgroundColor: "var(--body-bg, #f4f9ff)", minHeight: "100vh", display: "flex", flexDirection: "column" }}>
         <Navbar toggleSidebar={toggleSidebar} />
-        <div className="container py-4">
-          <div className="card shadow-sm border-0 p-4" style={{ backgroundColor: "var(--card-bg, #fff)" }}>
-            <h3 className="fw-bold text-primary mb-3">Settings Page</h3>
-            <p className="text-muted">
-              Hey hello 👋 we are on the <strong>Settings</strong> page.
-            </p>
+        
+        <div className="container py-3 py-md-4 flex-grow-1">
+          <div className="card shadow-sm border-0 p-3 p-md-4" style={{ backgroundColor: "var(--card-bg, #fff)" }}>
+ 
+         
+            
             {/* Color Theme Select */}
             <div className="mb-4">
               <label htmlFor="theme-select" className="form-label fw-bold">Color Theme</label>
@@ -168,8 +169,8 @@ export default function Settings() {
                   try { localStorage.setItem("site-theme", t); } catch (e) {}
                   applyTheme(t);
                 }}
-                className="form-select form-select-sm"
-                style={{ width: 180, backgroundColor: "var(--search-bg, #fff)", color: "var(--search-text, #000)" }}
+                className="form-select"
+                style={{ maxWidth: 200, backgroundColor: "var(--search-bg, #fff)", color: "var(--search-text, #000)" }}
                 title="Choose color theme"
               >
                 <option value="default">Default</option>
@@ -180,16 +181,9 @@ export default function Settings() {
                 <option value="mocha">Mocha</option>
               </select>
             </div>
-            {/* ✅ Buttons Section */}
-           
-          
-           
           </div>
         </div>
       </div>
-      <div>
-       {/* <TradingViewWidget /> */}
-    </div>
     </div>
   );
 }

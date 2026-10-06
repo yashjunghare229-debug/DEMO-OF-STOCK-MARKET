@@ -657,23 +657,25 @@ export default function IndexDetail() {
     <div style={{ width: "100%", margin: "0px auto" }}>
       <Navbar2 />
 
-      <div style={{ maxWidth: "1300px", margin: "0 auto", padding: "0 10px" }}>
+      <div style={{ maxWidth: "1300px", margin: "0 auto", padding: "0 12px" }}>
         {/* Header Section */}
-        <div className="d-flex justify-content-between align-items-center mb-4 mt-3">
-          <div>
-            <img src={Logo} alt="Logo" width={120} />
-            <h2 className="text-primary fw-bold">{data.name || indexName}</h2>
+        <div className="d-flex justify-content-between align-items-center mb-3 mt-3">
+          <div style={{ flex: 1 }}>
+            <img src={Logo} alt="Logo" width={80} className="d-none d-sm-block" />
+            <img src={Logo} alt="Logo" width={60} className="d-block d-sm-none" />
+            <h2 className="text-primary fw-bold" style={{ fontSize: '1.25rem' }}>{data.name || indexName}</h2>
           </div>
           <button
             onClick={() => navigate("/user/market-overview")}
-            className="btn"
+            className="btn flex-shrink-0 ms-2"
             style={{
               background: "#ff5722",
               color: "white",
-              borderRadius: "10px",
-              padding: "10px 20px",
+              borderRadius: "8px",
+              padding: "8px 14px",
               fontWeight: 600,
-              boxShadow: "0 4px 10px rgba(0,0,0,0.15)",
+              fontSize: '0.85rem',
+              boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
             }}
           >
             ← Back
@@ -681,13 +683,13 @@ export default function IndexDetail() {
         </div>
 
         {/* Price Section */}
-        <div className="mb-4 d-flex align-items-center gap-3" style={{ fontSize: "1.6rem" }}>
+        <div className="mb-3 d-flex align-items-center gap-2 flex-wrap" style={{ fontSize: "1.25rem" }}>
           <span className="fw-bold text-dark">₹{formatNum(item.lastPrice)}</span>
           <span
             style={{
               color: item.change >= 0 ? "green" : "red",
               fontWeight: 500,
-              fontSize: "1.1rem",
+              fontSize: "0.95rem",
             }}
           >
             ₹{formatNum(item.change)} ({formatNum(item.pChange)}%)
@@ -696,40 +698,40 @@ export default function IndexDetail() {
 
         {/* Chart Card */}
         <div
-          className="mb-5"
+          className="mb-4"
           style={{
-            boxShadow: "0 4px 15px rgba(0,0,0,0.15)",
-            borderRadius: "14px",
+            boxShadow: "0 2px 12px rgba(0,0,0,0.1)",
+            borderRadius: "12px",
             overflow: "hidden",
             background: "white",
-            padding: "10px",
+            padding: "8px",
           }}
         >
           <IndexChart symbol={yahooSymbol} title={indexName} />
         </div>
 
         {/* Performance Section */}
-        <div className="d-flex flex-column gap-4 mb-5">
+        <div className="d-flex flex-column gap-3 mb-4">
           {[
             { title: "🌤️ Day Performance", percent: dayPercent, min: dayMin, max: dayMax },
             { title: "📅 52-Week Performance", percent: weekPercent, min: weekMin, max: weekMax },
           ].map((perf) => (
             <div
               key={perf.title}
-              className="shadow-sm p-4 rounded-4 bg-white"
+              className="shadow-sm p-3 rounded-4 bg-white"
               style={{ border: "1px solid #eee" }}
             >
-              <h5 className="fw-semibold text-secondary mb-3">{perf.title}</h5>
+              <h5 className="fw-semibold text-secondary mb-3" style={{ fontSize: '0.95rem' }}>{perf.title}</h5>
 
-              <div className="position-relative mb-3" style={{ height: "12px" }}>
+              <div className="position-relative mb-2" style={{ height: "10px" }}>
                 <div
                   className="bg-light position-absolute top-50 start-0 translate-middle-y rounded-pill"
-                  style={{ width: "100%", height: "6px" }}
+                  style={{ width: "100%", height: "4px" }}
                 ></div>
                 <PriceMarker percent={perf.percent} />
               </div>
 
-              <div className="d-flex justify-content-between small text-muted">
+              <div className="d-flex justify-content-between small text-muted" style={{ fontSize: '0.75rem' }}>
                 <span>₹{formatNum(perf.min)}</span>
                 <span>₹{formatNum(perf.max)}</span>
               </div>
@@ -741,13 +743,13 @@ export default function IndexDetail() {
         <div
           style={{
             overflowX: "auto",
-            borderRadius: "16px",
+            borderRadius: "12px",
             background: "white",
-            boxShadow: "0 6px 20px rgba(0,0,0,0.08)",
-            padding: "0px",
+            boxShadow: "0 2px 12px rgba(0,0,0,0.06)",
+            padding: "0",
           }}
         >
-          <table style={{ width: "100%", borderCollapse: "collapse" }}>
+          <table style={{ width: "100%", borderCollapse: "collapse", minWidth: "500px" }}>
             <thead
               style={{
                 background: "linear-gradient(to right, #005bea, #00c6fb)",
@@ -756,11 +758,11 @@ export default function IndexDetail() {
               }}
             >
               <tr>
-                <th style={{ padding: "12px", textAlign: "left" }}>#</th>
-                <th style={{ padding: "12px", textAlign: "left" }}>Company</th>
-                <th>LTP</th>
-                <th>Change</th>
-                <th>% Change</th>
+                <th style={{ padding: "10px", textAlign: "left", fontSize: '0.8rem' }}>#</th>
+                <th style={{ padding: "10px", textAlign: "left", fontSize: '0.8rem' }}>Company</th>
+                <th style={{ padding: "10px", fontSize: '0.8rem' }}>LTP</th>
+                <th style={{ padding: "10px", fontSize: '0.8rem' }}>Change</th>
+                <th style={{ padding: "10px", fontSize: '0.8rem' }}>% Change</th>
               </tr>
             </thead>
 
@@ -782,15 +784,15 @@ export default function IndexDetail() {
                     e.currentTarget.style.transform = "scale(1)";
                   }}
                 >
-                  <td style={{ padding: "12px", fontWeight: 600, color: "#555" }}>
+                  <td style={{ padding: "10px", fontWeight: 600, color: "#555", fontSize: '0.85rem' }}>
                     {index + 1}
                   </td>
-                  <td style={{ padding: "12px", fontWeight: 600 }}>{item.symbol}</td>
-                  <td style={{ fontWeight: 500 }}>₹{formatNum(item.lastPrice)}</td>
-                  <td style={{ fontWeight: 500, color: item.change >= 0 ? "green" : "red" }}>
+                  <td style={{ padding: "10px", fontWeight: 600, fontSize: '0.85rem' }}>{item.symbol}</td>
+                  <td style={{ fontWeight: 500, fontSize: '0.85rem' }}>₹{formatNum(item.lastPrice)}</td>
+                  <td style={{ fontWeight: 500, fontSize: '0.85rem', color: item.change >= 0 ? "green" : "red" }}>
                     ₹{formatNum(item.change)}
                   </td>
-                  <td style={{ fontWeight: 500, color: item.pChange >= 0 ? "green" : "red" }}>
+                  <td style={{ fontWeight: 500, fontSize: '0.85rem', color: item.pChange >= 0 ? "green" : "red" }}>
                     {formatNum(item.pChange)}%
                   </td>
                 </tr>
@@ -800,8 +802,12 @@ export default function IndexDetail() {
         </div>
 
         {/* Show More button */}
-        <div className="text-center mt-4 mb-5">
-          <button className="btn btn-outline-primary" onClick={() => setShowAll(!showAll)}>
+        <div className="text-center mt-3 mb-4">
+          <button
+            className="btn btn-outline-primary"
+            onClick={() => setShowAll(!showAll)}
+            style={{ fontSize: '0.85rem', padding: '8px 20px' }}
+          >
             {showAll ? "Show Less" : "Show More"}
           </button>
         </div>

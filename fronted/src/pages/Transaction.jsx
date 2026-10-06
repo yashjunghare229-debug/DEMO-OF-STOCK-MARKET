@@ -5,9 +5,76 @@ import { useAuth } from "../context/AuthContext";
 import axios from "axios";
 
 export default function Transaction() {
-    const [showAllOrders, setShowAllOrders] = useState(false);
-  // Inject custom styles for transaction card hover effect and arrow
-  React.useEffect(() => {
+  const [showAllOrders, setShowAllOrders] = useState(false);
+  const [isSidebarVisible, setIsSidebarVisible] = useState(true);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 992);
+   const [sidebarOpen, setSidebarOpen] = useState(!isMobile);
+  const { user } = useAuth();
+  const [completedOrders, setCompletedOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedOrder, setSelectedOrder] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filterOption, setFilterOption] = useState("");
+  const [dateFrom, setDateFrom] = useState("");
+  const [dateTo, setDateTo] = useState("");
+
+
+  
+
+  // const toggleSidebar = () => setIsSidebarVisible((prev) => !prev);
+  // const closeSidebar = () => setIsSidebarVisible(false);
+
+  // Handle responsive breakpoint
+  // useEffect(() => {
+  //   const handleResize = () => {
+  //     const mobile = window.innerWidth < 992;
+  //     setIsMobile(mobile);
+  //     if (!mobile) {
+  //       setIsSidebarVisible(true);
+  //     }
+  //   };
+  //   window.addEventListener('resize', handleResize);
+  //   return () => window.removeEventListener('resize', handleResize);
+  // }, []);
+
+
+
+
+
+  // Handle responsive breakpoint
+  useEffect(() => {
+    const handleResize = () => {
+      const mobile = window.innerWidth < 992;
+      setIsMobile(mobile);
+      // On desktop, always show sidebar; on mobile, keep current state
+      if (!mobile) {
+        setSidebarOpen(true);
+      }
+    };
+    
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const toggleSidebar = () => {
+    setSidebarOpen(prev => !prev);
+  };
+
+  const closeSidebar = () => {
+    setSidebarOpen(false);
+  };
+
+
+
+
+
+
+
+
+
+  // Inject custom styles
+  useEffect(() => {
     const style = document.createElement('style');
     style.innerHTML = `
       .transaction-card:hover {
@@ -21,30 +88,18 @@ export default function Transaction() {
       }
     `;
     document.head.appendChild(style);
-    return () => {
-      document.head.removeChild(style);
-    };
+    return () => document.head.removeChild(style);
   }, []);
-  const [isSidebarVisible, setIsSidebarVisible] = useState(true);
-  const { user } = useAuth();
-  const [completedOrders, setCompletedOrders] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [selectedOrder, setSelectedOrder] = useState(null);
-  const [showModal, setShowModal] = useState(false);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [filterOption, setFilterOption] = useState("");
-  const [dateFrom, setDateFrom] = useState("");
-  const [dateTo, setDateTo] = useState("");
-  // Modal component for order details
+
   const OrderModal = ({ order, onClose }) => {
     if (!order) return null;
-    // Example fallback values for missing fields
     const orderPrice = order.tradedPrice || order.avgPrice || 0;
     const avgPrice = order.avgPrice || order.tradedPrice || 0;
     const mktPrice = order.mktPrice || order.marketPrice || order.avgPrice || 0;
     const exchange = order.exchange || 'NSE';
     const duration = order.duration || 'Day';
     const orderValue = order.totalAmount || (order.qty && order.avgPrice ? order.qty * order.avgPrice : undefined);
+
     return (
       <div style={{
         position: "fixed",
@@ -52,97 +107,87 @@ export default function Transaction() {
         left: 0,
         width: "100vw",
         height: "100vh",
-        background: "rgba(37, 39, 38, 0.93)", // Even darker overlay
+        background: "rgba(37, 39, 38, 0.93)",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
         zIndex: 1050,
+        padding: "16px",
       }}>
-        <div style={{ background: "#fff", borderRadius: 14, minWidth: 420, maxWidth: 850, width: "100%", boxShadow: "0 4px 32px rgba(0,0,0,0.10)", border: 'none', padding: 0 }}>
-          <div className="p-4">
+        <div style={{ background: "#fff", borderRadius: 14, minWidth: 320, maxWidth: 850, width: "100%", boxShadow: "0 4px 32px rgba(0,0,0,0.10)", border: 'none', padding: 0 }}>
+          <div className="p-3 p-md-4">
             <div className="d-flex justify-content-between align-items-center mb-2">
               <h5 className="fw-bold mb-0">Order Details</h5>
               <button type="button" className="btn-close" aria-label="Close" onClick={onClose}></button>
             </div>
             <div className="card mb-3" style={{ borderRadius: 12, border: '1px solid #eee', boxShadow: 'none' }}>
-              <div className="card-body pb-2 pt-3 px-4">
-                <div className="d-flex align-items-center justify-content-between mb-2">
+              <div className="card-body pb-2 pt-3 px-3 px-md-4">
+                <div className="d-flex align-items-center justify-content-between mb-2 flex-wrap gap-2">
                   <span style={{ background: order.side === 'BUY' ? '#d1fae5' : '#fee2e2', color: order.side === 'BUY' ? '#059669' : '#dc2626', fontWeight: 700, fontSize: 15, borderRadius: 16, padding: '2px 16px', letterSpacing: 1 }}>{order.side}</span>
-                 <div style={{ display:"flex",flexDirection:"column"}}> <span className="text-muted" style={{ fontWeight: 500, fontSize: 15 }}>Qty</span>
-                  <span className="fw-bold" style={{ fontSize: 28 }}>{order.qty}</span></div>
+                  <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
+                    <span className="text-muted" style={{ fontWeight: 500, fontSize: 15 }}>Qty</span>
+                    <span className="fw-bold" style={{ fontSize: 28 }}>{order.qty}</span>
+                  </div>
                 </div>
-                <div className="fw-bold" style={{ fontSize: 30, marginBottom: 8 }}>{order.companyName || order.symbol}</div>
+                <div className="fw-bold" style={{ fontSize: 24, marginBottom: 8 }}>{order.companyName || order.symbol}</div>
                 <hr style={{ margin: '16px 0 12px 0', borderTop: '1px dashed #ddd' }} />
-                <div className="row g-0 mb-2" style={{ fontSize: 20}}>
-                  <div className="col-4 mb-2">
-                    <div className="text-muted">Order</div>
+                <div className="row g-0 mb-2" style={{ fontSize: 16 }}>
+                  <div className="col-6 col-md-4 mb-2">
+                    <div className="text-muted" style={{ fontSize: 13 }}>Order</div>
                     <div className="fw-bold">{order.priceType}</div>
                   </div>
-                  <div className="col-4 mb-2">
-                    <div className="text-muted">Type</div>
+                  <div className="col-6 col-md-4 mb-2">
+                    <div className="text-muted" style={{ fontSize: 13 }}>Type</div>
                     <div className="fw-bold">Delivery</div>
                   </div>
-                  <div className="col-4 mb-2">
-                    <div className="text-muted">Subtype</div>
+                  <div className="col-6 col-md-4 mb-2">
+                    <div className="text-muted" style={{ fontSize: 13 }}>Subtype</div>
                     <div className="fw-bold">Regular</div>
                   </div>
-                  <div className="col-4 mb-2">
-                    <div className="text-muted">Order Price</div>
+                  <div className="col-6 col-md-4 mb-2">
+                    <div className="text-muted" style={{ fontSize: 13 }}>Order Price</div>
                     <div className="fw-bold">₹{Number(orderPrice).toLocaleString("en-IN", { minimumFractionDigits: 2 })}</div>
                   </div>
-                  <div className="col-4 mb-2">
-                    <div className="text-muted">Avg Price</div>
+                  <div className="col-6 col-md-4 mb-2">
+                    <div className="text-muted" style={{ fontSize: 13 }}>Avg Price</div>
                     <div className="fw-bold">₹{Number(avgPrice).toLocaleString("en-IN", { minimumFractionDigits: 2 })}</div>
                   </div>
-                  <div className="col-4 mb-2">
-                    <div className="text-muted">Mkt Price</div>
+                  <div className="col-6 col-md-4 mb-2">
+                    <div className="text-muted" style={{ fontSize: 13 }}>Mkt Price</div>
                     <div className="fw-bold">₹{Number(mktPrice).toLocaleString("en-IN", { minimumFractionDigits: 2 })}</div>
                   </div>
-                  <div className="col-4 mb-2">
-                    <div className="text-muted">Exchange</div>
+                  <div className="col-6 col-md-4 mb-2">
+                    <div className="text-muted" style={{ fontSize: 13 }}>Exchange</div>
                     <div className="fw-bold">{exchange}</div>
                   </div>
-                  <div className="col-4 mb-2">
-                    <div className="text-muted">Duration</div>
+                  <div className="col-6 col-md-4 mb-2">
+                    <div className="text-muted" style={{ fontSize: 13 }}>Duration</div>
                     <div className="fw-bold">{duration}</div>
                   </div>
                 </div>
                 <hr style={{ margin: '16px 0 12px 0', borderTop: '1px dashed #ddd' }} />
-                <div className="d-flex justify-content-between align-items-center" style={{ fontSize: 20}}>
+                <div className="d-flex justify-content-between align-items-center flex-wrap gap-2" style={{ fontSize: 16 }}>
                   <span>{new Date(order.date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })} {new Date(order.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                   <span className="fw-bold">Order Value ₹{orderValue ? Number(orderValue).toLocaleString("en-IN", { minimumFractionDigits: 2 }) : '-'}</span>
                 </div>
               </div>
             </div>
-            {/* <div className="card" style={{ borderRadius: 12, border: '1px solid #eee', boxShadow: 'none' }}>
-              <div className="card-body py-3 px-4 d-flex align-items-center justify-content-between" style={{ cursor: 'pointer' }}>
-                <span className="fw-bold" style={{ fontSize: 17 }}>List of Trades</span>
-                <span style={{ fontSize: 22, color: '#0a8dff' }}>&#x25BC;</span>
-              </div>
-            </div> */}
           </div>
         </div>
       </div>
     );
   };
 
-  const toggleSidebar = () => setIsSidebarVisible((prev) => !prev);
-
-  // Fetch completed orders
   useEffect(() => {
     if (!user?._id) return;
-
     const fetchCompletedOrders = async () => {
       try {
         setLoading(true);
         const res = await axios.get(`http://localhost:5000/orders/${user._id}`);
         const ordersData = res.data.orders || [];
-
-        // Filter only completed orders and sort by date (newest first)
         const completed = ordersData
           .filter((o) => o.status === "COMPLETED")
           .sort((a, b) => new Date(b.date) - new Date(a.date));
-
         setCompletedOrders(completed);
       } catch (err) {
         console.error("Failed to fetch completed orders:", err);
@@ -150,14 +195,11 @@ export default function Transaction() {
         setLoading(false);
       }
     };
-
     fetchCompletedOrders();
   }, [user]);
 
-  // Filtered orders based on search and buy/sell filters
   const filteredOrders = completedOrders.filter((order) => {
-    const matchesSearch =
-      searchTerm.trim() === "" ||
+    const matchesSearch = searchTerm.trim() === "" ||
       order.symbol?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       order.companyName?.toLowerCase().includes(searchTerm.toLowerCase());
     let matchesFilter = true;
@@ -173,44 +215,43 @@ export default function Transaction() {
   });
 
   return (
-    <div className="d-flex" style={{ backgroundColor: "#f4f9ff", minHeight: "100vh" }}>
-      {isSidebarVisible && <Sidebar />}
-      <div
-        className="flex-grow-1"
-        style={{
-          marginLeft: isSidebarVisible ? "250px" : "0",
-          transition: "margin-left 0.3s ease",
-          minHeight: "100vh",
-        }}
-      >
+    <div className="d-flex" style={{ backgroundColor: "var(--body-bg)", minHeight: "100vh" }}>
+     
+
+      <Sidebar  isOpen={sidebarOpen}
+        onClose={closeSidebar}
+        isMobile={isMobile} />
+
+      <div className="flex-grow-1" style={{ marginLeft: !isMobile && isSidebarVisible ? "250px" : "0", transition: "margin-left 0.3s ease", minHeight: "100vh", display: "flex", flexDirection: "column" }}>
         <Navbar toggleSidebar={toggleSidebar} />
-        <div className="container py-4">
+        
+        <div className="container py-3 py-md-4 flex-grow-1">
           {/* Horizontal filter bar */}
           <div className="card shadow-sm p-3 mb-4" style={{ borderRadius: 12 }}>
-            <div className="d-flex flex-wrap align-items-center gap-3">
-              <div className="d-flex align-items-center gap-2">
+            <div className="d-flex flex-wrap align-items-center gap-2 gap-md-3">
+              <div className="d-flex align-items-center gap-2 flex-wrap">
                 <input className="form-check-input" type="radio" checked readOnly />
-                <label className="form-check-label me-3">Equity</label>
+                <label className="form-check-label me-2 me-md-3">Equity</label>
                 <input className="form-check-input" type="radio" disabled />
-                <label className="form-check-label me-3">GTT - Equity</label>
+                {/* <label className="form-check-label">GTT - Equity</label> */}
               </div>
               <input
                 type="text"
                 className="form-control"
-                style={{ maxWidth: 220 }}
+                style={{ maxWidth: 220, width: '100%' }}
                 placeholder="Search for a Stock"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
-              <div className="d-flex align-items-center" style={{ gap: 8 }}>
-                <span style={{ fontWeight: 600, fontSize: 16 }}>From</span>
-                <input type="date" className="form-control" style={{ maxWidth: 140 }} value={dateFrom} onChange={e => setDateFrom(e.target.value)} />
+              <div className="d-flex align-items-center gap-2">
+                <span style={{ fontWeight: 600, fontSize: 14 }}>From</span>
+                <input type="date" className="form-control" style={{ maxWidth: 140, width: '100%' }} value={dateFrom} onChange={e => setDateFrom(e.target.value)} />
               </div>
-              <div className="d-flex align-items-center" style={{ gap: 8 }}>
-                <span style={{ fontWeight: 600, fontSize: 16 }}>To</span>
-                <input type="date" className="form-control" style={{ maxWidth: 140 }} value={dateTo} onChange={e => setDateTo(e.target.value)} />
+              <div className="d-flex align-items-center gap-2">
+                <span style={{ fontWeight: 600, fontSize: 14 }}>To</span>
+                <input type="date" className="form-control" style={{ maxWidth: 140, width: '100%' }} value={dateTo} onChange={e => setDateTo(e.target.value)} />
               </div>
-              <select className="form-select" style={{ maxWidth: 200 }} value={filterOption} onChange={e => setFilterOption(e.target.value)}>
+              <select className="form-select" style={{ maxWidth: 200, width: '100%' }} value={filterOption} onChange={e => setFilterOption(e.target.value)}>
                 <option value="">All Orders</option>
                 <option value="BUY">Buy orders</option>
                 <option value="SELL">Sell orders</option>
@@ -218,13 +259,14 @@ export default function Transaction() {
                 <option value="COMPLETED">Successful orders</option>
                 <option value="CANCELLED">Unsuccessful orders</option>
               </select>
-              <button className="btn btn-link p-0 ms-2" style={{ color: "#0a8dff" }} onClick={() => {
+              <button className="btn btn-link p-0" style={{ color: "#0a8dff" }} onClick={() => {
                 setSearchTerm(""); setFilterOption(""); setDateFrom(""); setDateTo("");
               }}>Clear all</button>
             </div>
           </div>
+
           <div className="mb-4">
-            <h3 className="fw-bold text-primary mb-4">Transaction History</h3>
+            <h3 className="fw-bold text-primary mb-4" style={{ fontSize: '1.5rem' }}>Transaction History</h3>
             {loading ? (
               <div className="text-center py-4">
                 <div className="spinner-border text-primary" role="status">
@@ -232,9 +274,7 @@ export default function Transaction() {
                 </div>
               </div>
             ) : filteredOrders.length === 0 ? (
-              <div className="alert alert-info text-center">
-                No transactions found.
-              </div>
+              <div className="alert alert-info text-center">No transactions found.</div>
             ) : (
               <div>
                 {(showAllOrders ? filteredOrders : filteredOrders.slice(0, 13)).map((order, idx) => (
@@ -249,36 +289,32 @@ export default function Transaction() {
                     }}
                     onClick={() => { setSelectedOrder(order); setShowModal(true); }}
                   >
-                    <div className="w-100 d-flex align-items-center justify-content-between" style={{ fontSize: 19 }}>
-                      <span style={{ width: 350, fontWeight: 500 }}>{order.companyName || order.symbol}</span>
-                      <span style={{ width: 120, color: "#0a8dff", fontWeight: 700 }}>₹{Number(order.avgPrice).toLocaleString("en-IN", { minimumFractionDigits: 2 })}</span>
-                      <span style={{ width: 90, fontWeight: 700 }}>{order.side}</span>
-                      <span style={{ width: 80, fontWeight: 700 }}>{order.priceType}</span>
-                      <span style={{ width: 150, color: "#888", fontWeight: 700 }}>{new Date(order.date).toLocaleDateString()}</span>
+                    <div className="w-100 d-flex align-items-center justify-content-between flex-wrap gap-2" style={{ fontSize: 16 }}>
+                      <span style={{ fontWeight: 500, minWidth: 120 }}>{order.companyName || order.symbol}</span>
+                      <span style={{ color: "#0a8dff", fontWeight: 700, minWidth: 100 }}>₹{Number(order.avgPrice).toLocaleString("en-IN", { minimumFractionDigits: 2 })}</span>
+                      <span style={{ fontWeight: 700, minWidth: 60 }}>{order.side}</span>
+                      <span style={{ fontWeight: 700, minWidth: 60 }}>{order.priceType}</span>
+                      <span style={{ color: "#888", fontWeight: 700, minWidth: 100 }}>{new Date(order.date).toLocaleDateString()}</span>
                     </div>
                     <span className="transaction-arrow" style={{
                       position: "absolute",
-                      right: 24,
+                      right: 16,
                       top: "50%",
                       transform: "translateY(-50%)",
-                      fontSize: 40,
+                      fontSize: 32,
                       color: "#0a8dff",
                       fontWeight: 900,
                       opacity: 0,
                       transition: "opacity 0.2s"
-                    }}>&gt;</span>
+                    }}>&#8594;</span>
                   </div>
                 ))}
                 {filteredOrders.length > 13 && (
                   <div className="text-center mt-3">
                     {!showAllOrders ? (
-                      <button className="btn btn-primary px-4 py-2" style={{ fontSize: 18, fontWeight: 600, borderRadius: 8 }} onClick={() => setShowAllOrders(true)}>
-                        Show More
-                      </button>
+                      <button className="btn btn-primary px-4 py-2" style={{ fontSize: 16, fontWeight: 600, borderRadius: 8 }} onClick={() => setShowAllOrders(true)}>Show More</button>
                     ) : (
-                      <button className="btn btn-secondary px-4 py-2" style={{ fontSize: 18, fontWeight: 600, borderRadius: 8 }} onClick={() => setShowAllOrders(false)}>
-                        Show Less
-                      </button>
+                      <button className="btn btn-secondary px-4 py-2" style={{ fontSize: 16, fontWeight: 600, borderRadius: 8 }} onClick={() => setShowAllOrders(false)}>Show Less</button>
                     )}
                   </div>
                 )}
@@ -286,10 +322,8 @@ export default function Transaction() {
             )}
           </div>
         </div>
-        {/* Modal for order details */}
-        {showModal && (
-          <OrderModal order={selectedOrder} onClose={() => setShowModal(false)} />
-        )}
+
+        {showModal && <OrderModal order={selectedOrder} onClose={() => setShowModal(false)} />}
       </div>
     </div>
   );

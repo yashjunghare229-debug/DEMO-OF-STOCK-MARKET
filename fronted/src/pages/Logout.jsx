@@ -46,7 +46,7 @@ export default function Logout() {
               </button>
               <button
                 className="btn btn-outline-secondary px-4 rounded-pill"
-                onClick={() => navigate(-1)}
+                onClick={() => navigate("/user/home")}
               >
                 Cancel
               </button>

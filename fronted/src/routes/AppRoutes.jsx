@@ -31,7 +31,6 @@ import NewProfile from "../pages/NewProfile";
 
 const AppRoutes = () => {
   return (
-    <Router>
       <Routes>
         {/* Public */}
         <Route path="/" element={<Landing />} />
@@ -67,14 +66,9 @@ const AppRoutes = () => {
           
           <Route path="reports" element={<Reports />} />
         </Route>
-
-
-
         <Route path="/user/watchlist" element={<ProtectedRoute><Watchlist /></ProtectedRoute>} />
-        {/* <Route path="/home/portfolio" element={<ProtectedRoute><Portfolio /></ProtectedRoute>} /> */}
         <Route path="/user/transaction" element={<ProtectedRoute><Transaction /></ProtectedRoute>} />
         <Route path="/user/setting" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
-
         <Route
           path="/user/portfolio"
           element={
@@ -88,8 +82,6 @@ const AppRoutes = () => {
           <Route path="orders" element={<Portfolio tab="orders" />} />
           <Route path="completed" element={<Portfolio tab="completed" />} />
         </Route>
-
-
         {/* News */}
         <Route
           path="/user/news"
@@ -99,18 +91,13 @@ const AppRoutes = () => {
             </ProtectedRoute>
           }
         />
-
-
         <Route path="/stock/:name" element={<StockPage />} />
 
         <Route path="/user/market-overview/ipo" element={<IPOPage/>} />
          <Route path="/user/market-overview/mutualfunds" element={<MutualFundPage/>} />
          <Route path="/user/market-overview/etf" element={<EtfMain/>} />
-       
-       
         <Route path="/user/report" element={<ProtectedRoute><Report /></ProtectedRoute>} />
       </Routes>
-    </Router>
   );
 };
 

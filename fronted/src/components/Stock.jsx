@@ -16,6 +16,7 @@ const Stock = ({ setStockForOrderBox }) => {
   const [adding, setAdding] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   const [addSuccess, setAddSuccess] = useState(false);
+  const [showOrderBox, setShowOrderBox] = useState(false);
   const { user } = useAuth();
   const navigate = useNavigate();
 
@@ -109,6 +110,7 @@ const Stock = ({ setStockForOrderBox }) => {
         style={{
           left: `${clampedPercent}%`,
           transform: "translate(-50%, -100%)",
+          zIndex: 10,
         }}
       >
         <div
@@ -127,6 +129,49 @@ const Stock = ({ setStockForOrderBox }) => {
         >
           ₹{formatNum(value)}
         </small>
+      </div>
+    );
+  };
+
+  // Performance bar - simple line with marker
+  const PerformanceBar = ({ percent, min, max, current }) => {
+    const clampedPercent = Math.max(0, Math.min(100, percent));
+    
+    return (
+      <div className="position-relative mb-3" style={{ height: "40px" }}>
+        {/* Simple line track */}
+        <div
+          className="position-absolute top-50 start-0 translate-middle-y"
+          style={{ width: "100%", height: "4px", backgroundColor: "#e5e7eb", borderRadius: "2px" }}
+        ></div>
+        
+        {/* Current price marker */}
+        <div
+          className="position-absolute top-50"
+          style={{
+            left: `${clampedPercent}%`,
+            transform: "translate(-50%, -50%)",
+            zIndex: 5,
+          }}
+        >
+          <div
+            style={{
+              width: "16px",
+              height: "16px",
+              borderRadius: "50%",
+              background: "#0d6efd",
+              border: "3px solid #fff",
+              boxShadow: "0 0 0 2px #0d6efd, 0 2px 4px rgba(0,0,0,0.2)",
+            }}
+          ></div>
+        </div>
+        
+        {/* Labels */}
+        <div className="d-flex justify-content-between small text-muted mt-2">
+          <span>₹{formatNum(min)}</span>
+          <span className="fw-semibold text-primary">₹{formatNum(current)}</span>
+          <span>₹{formatNum(max)}</span>
+        </div>
       </div>
     );
   };
@@ -157,12 +202,15 @@ const Stock = ({ setStockForOrderBox }) => {
             </p>
           </div>
 
-          <button
-            onClick={() => setShowWatchlistModal(true)}
-            className="btn btn-outline-primary rounded-pill px-4 fw-semibold shadow-sm hover-scale"
-          >
-            + Watchlist
-          </button>
+          <div className="d-flex flex-column gap-2">
+            <button
+              onClick={() => setShowWatchlistModal(true)}
+              className="btn btn-outline-primary rounded-pill px-4 fw-semibold shadow-sm hover-scale"
+            >
+              + Watchlist
+            </button>
+          
+          </div>
         </div>
 
         {/* ===== LIVE PRICE ===== */}
@@ -234,17 +282,12 @@ const Stock = ({ setStockForOrderBox }) => {
         {/* ===== DAY PERFORMANCE ===== */}
         <Card className="shadow-sm border-0 p-4 mb-4 bg-white rounded-4">
           <h5 className="fw-semibold text-primary mb-3">🌤️ Day Performance</h5>
-          <div className="position-relative mb-4" style={{ height: "40px" }}>
-            <div
-              className="bg-light position-absolute top-50 start-0 translate-middle-y rounded-pill"
-              style={{ width: "100%", height: "6px" }}
-            ></div>
-            <PriceMarker percent={dayPercent} value={current} />
-          </div>
-          <div className="d-flex justify-content-between small text-muted">
-            <span>₹{formatNum(dayMin)}</span>
-            <span>₹{formatNum(dayMax)}</span>
-          </div>
+          <PerformanceBar 
+            percent={dayPercent} 
+            min={dayMin} 
+            max={dayMax} 
+            current={current}
+          />
         </Card>
 
         {/* ===== 52-WEEK PERFORMANCE ===== */}
@@ -252,17 +295,12 @@ const Stock = ({ setStockForOrderBox }) => {
           <h5 className="fw-semibold text-primary mb-3">
             📅 52-Week Performance
           </h5>
-          <div className="position-relative mb-4" style={{ height: "40px" }}>
-            <div
-              className="bg-light position-absolute top-50 start-0 translate-middle-y rounded-pill"
-              style={{ width: "100%", height: "6px" }}
-            ></div>
-            <PriceMarker percent={weekPercent} value={current} />
-          </div>
-          <div className="d-flex justify-content-between small text-muted">
-            <span>₹{nseData.priceInfo.weekHighLow.min}</span>
-            <span>₹{nseData.priceInfo.weekHighLow.max}</span>
-          </div>
+          <PerformanceBar 
+            percent={weekPercent} 
+            min={weekMin} 
+            max={weekMax} 
+            current={current}
+          />
         </Card>
 
         {/* ===== FUNDAMENTALS ===== */}
@@ -295,9 +333,9 @@ const Stock = ({ setStockForOrderBox }) => {
                   .totalDebtPerTotalEquityMostRecentQuarter}
               </div>
               <div className="col-md-6 mb-2">
-                <strong>ROE:</strong> ₹{formatNum(
+                <strong>ROE:</strong> {formatNum(
                   peer?.returnOnAverageEquity5YearAverage
-                )}
+                )}%
               </div>
               <div className="col-md-6 mb-2">
                 <strong>EPS:</strong> ₹{
@@ -312,9 +350,9 @@ const Stock = ({ setStockForOrderBox }) => {
                 }
               </div>
               <div className="col-md-6 mb-2">
-                <strong>Dividend Yield:</strong> ₹{formatNum(
+                <strong>Dividend Yield:</strong> {formatNum(
                   peer?.dividendYieldIndicatedAnnualDividend
-                )}
+                )}%
               </div>
               <div className="col-md-6 mb-2">
                 <strong>Book Value:</strong> ₹{formatNum(

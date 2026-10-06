@@ -2,22 +2,32 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
+  FaArrowLeft,
   FaBell,
   FaSearch,
-  FaArrowLeft,
-  FaArrowRight,
   FaTimes,
+  FaBars,
 } from "react-icons/fa";
 import axios from "axios";
 import { useAuth } from "../context/AuthContext";
 
-const Navbar2 = () => {
+const Navbar2 = ({ toggleSidebar }) => {
   const [search, setSearch] = useState("");
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [suggestions, setSuggestions] = useState([]);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 992);
   const navigate = useNavigate();
 
   const { user } = useAuth();
+
+  // Handle responsive breakpoint
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 992);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // 🔍 Handle search submission
   const handleSearch = (e) => {
@@ -28,12 +38,6 @@ const Navbar2 = () => {
       setSuggestions([]);
     }
   };
-
-  // ⏪ Back & ⏩ Forward navigation
-  const handleGoBack = () => {
-    if (window.history.length > 1) navigate(-1);
-  };
-  const handleGoForward = () => navigate(1);
 
   // 📊 Fetch NSE autocomplete dynamically
   useEffect(() => {
@@ -89,40 +93,33 @@ const Navbar2 = () => {
           color: "#fff",
           height: "64px",
           zIndex: 1000,
-          position: "relative",
+          position: "sticky",
+          top: 0,
         }}
       >
-        <div className="container-fluid px-4 d-flex justify-content-between align-items-center">
-          {/* ✅ Left Section: Navigation Buttons + Title */}
-          <div className="d-flex gap-3 align-items-center">
-            <button
-              onClick={handleGoBack}
-              className="btn btn-light btn-sm d-flex align-items-center justify-content-center"
-              style={{
-                borderRadius: "50%",
-                width: "36px",
-                height: "36px",
-              }}
-            >
-              <FaArrowLeft className="text-primary" />
-            </button>
-            <button
-              onClick={handleGoForward}
-              className="btn btn-light btn-sm d-flex align-items-center justify-content-center"
-              style={{
-                borderRadius: "50%",
-                width: "36px",
-                height: "36px",
-              }}
-            >
-              <FaArrowRight className="text-primary" />
-            </button>
+        <div className="container-fluid px-2 px-md-4 d-flex justify-content-between align-items-center">
+          {/* ✅ Left Section */}
+          <div className="d-flex gap-2 gap-md-3 align-items-center">
+            {/* Hamburger Menu - Mobile Only */}
+                  <button 
+            onClick={() => navigate("/user/home")}
+            className="btn flex-shrink-0 ms-2"
+            style={{
+              background: "white",
+              color: "black",
+              borderRadius: "50%",
+              // padding: "8px 14px",
+              fontWeight: 400,
+              fontSize: '1.2rem',
+              boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
+            }}
+          >
+       <FaArrowLeft />
+          </button>
 
-            <h4 className="fw-bold mb-0 text-white ms-2">StockMarketPro</h4>
-
-            {/* ✅ Search Input (click to open fullscreen) */}
+            {/* ✅ Search Input - Desktop */}
             <div
-              className="bg-white rounded-pill d-flex align-items-center px-3 shadow-sm"
+              className="bg-white rounded-pill d-flex align-items-center px-3 shadow-sm d-none d-md-flex"
               style={{
                 width: "350px",
                 height: "40px",
@@ -142,15 +139,26 @@ const Navbar2 = () => {
                 readOnly
               />
             </div>
+
+            {/* Search Icon - Mobile */}
+            <button
+              className="btn p-1 d-md-none"
+              style={{ color: '#fff' }}
+              onClick={() => setIsSearchOpen(true)}
+              aria-label="Search"
+            >
+              <FaSearch size={18} />
+            </button>
           </div>
 
-          {/* ✅ Right Section (Notifications & User Info) */}
-          <div className="d-flex align-items-center gap-3">
-            {/* 🔔 Notifications */}
+          {/* ✅ Right Section */}
+          <div className="d-flex align-items-center gap-2 gap-md-3">
+            {/* 🔔 Notifications - Desktop only */}
             <Link
               to="/home/news"
               state={{ userInfo: user }}
               style={{ textDecoration: "none" }}
+              className="d-none d-md-block"
             >
               <FaBell
                 className="text-white"
@@ -158,23 +166,25 @@ const Navbar2 = () => {
               />
             </Link>
 
-            {/* 👤 User Info */}
-            <div className="d-flex align-items-center gap-2">
+            {/* 👤 User Avatar */}
+            <Link to="/home/profile" style={{ textDecoration: "none" }}>
               <div
                 className="bg-light text-primary fw-bold d-flex align-items-center justify-content-center rounded-circle"
-                style={{ width: "36px", height: "36px" }}
+                style={{ width: "36px", height: "36px", minWidth: "36px" }}
               >
                 {user?.username ? user.username.charAt(0).toUpperCase() : "U"}
               </div>
-              <Link to="/home/profile" style={{ textDecoration: "none" }}>
-                <span
-                  className="fw-semibold text-white"
-                  style={{ cursor: "pointer" }}
-                >
-                  {user?.username || "Guest User"}
-                </span>
-              </Link>
-            </div>
+            </Link>
+
+            {/* Username - Desktop only */}
+            <Link to="/home/profile" style={{ textDecoration: "none" }} className="d-none d-md-block">
+              <span
+                className="fw-semibold text-white"
+                style={{ cursor: "pointer", fontSize: "0.9rem" }}
+              >
+                {user?.username || "Guest User"}
+              </span>
+            </Link>
           </div>
         </div>
       </nav>
@@ -192,33 +202,33 @@ const Navbar2 = () => {
           <div
             className="bg-white rounded-pill shadow-lg d-flex align-items-center px-4"
             style={{
-              width: "60%",
+              width: "90%",
               maxWidth: "600px",
-              height: "60px",
+              height: "56px",
             }}
             onClick={(e) => e.stopPropagation()}
           >
-            <FaSearch className="text-muted me-3" />
+            <FaSearch className="text-muted me-3" size={18} />
             <input
               type="text"
               className="form-control border-0 shadow-none"
-              placeholder="Search stocks..."
+              placeholder="Search stocks (e.g. RELIANCE, TATASTEEL)..."
               value={search}
               autoFocus
               onChange={(e) => setSearch(e.target.value)}
               onKeyDown={handleSearch}
-              style={{ fontSize: "1.2rem" }}
+              style={{ fontSize: "1rem" }}
             />
             <FaTimes
               className="text-muted ms-3"
-              style={{ cursor: "pointer" }}
+              style={{ cursor: "pointer", fontSize: "1.2rem" }}
               onClick={() => setIsSearchOpen(false)}
             />
           </div>
         </div>
       )}
 
-      {/* ✅ Suggestion Dropdown (only visible in overlay mode) */}
+      {/* ✅ Suggestion Dropdown */}
       {isSearchOpen && suggestions.length > 0 && (
         <div
           className="position-fixed bg-white shadow rounded"
@@ -226,7 +236,7 @@ const Navbar2 = () => {
             top: "80px",
             left: "50%",
             transform: "translateX(-50%)",
-            width: "60%",
+            width: "90%",
             maxWidth: "600px",
             maxHeight: "250px",
             overflowY: "auto",
