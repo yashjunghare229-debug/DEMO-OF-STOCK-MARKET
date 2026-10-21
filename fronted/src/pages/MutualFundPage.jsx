@@ -7,10 +7,8 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 
 export default function MutualFundPage() {
-  const [isSidebarVisible, setIsSidebarVisible] = useState(true);
   // const [isMobile, setIsMobile] = useState(window.innerWidth < 992);
-  const { user } = useAuth();
-
+  useAuth();
 
   const [isMobile, setIsMobile] = useState(window.innerWidth < 992);
   const [sidebarOpen, setSidebarOpen] = useState(!isMobile);
@@ -72,7 +70,7 @@ export default function MutualFundPage() {
       <div
         className="flex-grow-1"
         style={{
-          marginLeft: !isMobile && isSidebarVisible ? "250px" : "0",
+          marginLeft: !isMobile && sidebarOpen ? "250px" : "0",
           transition: "margin-left 0.3s ease",
           minHeight: "100vh",
           display: "flex",

@@ -7,7 +7,7 @@ import Footer from "../components/Footer";
 
 export default function Watchlist() {
     // const [isMobile, setIsMobile] = useState(window.innerWidth < 992);
-    const [isSidebarVisible, setIsSidebarVisible] = useState(window.innerWidth >= 992); // Closed on mobile by default, open on desktop
+    const [isSidebarVisible] = useState(window.innerWidth >= 992); // Closed on mobile by default, open on desktop
     const { user } = useAuth();
 
     // const toggleSidebar = () => setIsSidebarVisible((prev) => !prev);

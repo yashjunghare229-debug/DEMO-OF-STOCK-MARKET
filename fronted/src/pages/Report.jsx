@@ -1,17 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { useAuth } from "../context/AuthContext";
 import Sidebar from "../components/Sidebar";
 import Navbar from "../components/Navbar";
 import Reports from "../components/Reports";
 
 export default function Report() {
-  const [isSidebarVisible, setIsSidebarVisible] = useState(true);
+  const isSidebarVisible = true;
   // const [isMobile, setIsMobile] = useState(window.innerWidth < 992);
-  const { user } = useAuth();
-
-
-
-  
        const [isMobile, setIsMobile] = useState(window.innerWidth < 992);
          const [sidebarOpen, setSidebarOpen] = useState(!isMobile);
 

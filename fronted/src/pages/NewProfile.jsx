@@ -2,12 +2,8 @@ import React, { useState, useEffect } from "react";
 import Sidebar from "../components/Sidebar";
 import Navbar from "../components/Navbar";
 import Profile from "./Profile";
-import { useAuth } from "../context/AuthContext";
 
 export default function NewProfile() {
-  const [isSidebarVisible, setIsSidebarVisible] = useState(true);
-  // const [isMobile, setIsMobile] = useState(window.innerWidth < 992);
-  const { user } = useAuth();
 
   // const toggleSidebar = () => setIsSidebarVisible((prev) => !prev);
   // const closeSidebar = () => setIsSidebarVisible(false);
@@ -61,7 +57,7 @@ export default function NewProfile() {
 
       <Sidebar isOpen={sidebarOpen} onClose={closeSidebar} isMobile={isMobile} />
 
-      <div className="flex-grow-1" style={{ marginLeft: !isMobile && isSidebarVisible ? "250px" : "0", transition: "margin-left 0.3s ease", backgroundColor: "var(--body-bg)", minHeight: "100vh", display: "flex", flexDirection: "column" }}>
+      <div className="flex-grow-1" style={{ marginLeft: !isMobile && sidebarOpen ? "250px" : "0", transition: "margin-left 0.3s ease", backgroundColor: "var(--body-bg)", minHeight: "100vh", display: "flex", flexDirection: "column" }}>
         <Navbar toggleSidebar={toggleSidebar} />
         <div className="container py-3 py-md-4 flex-grow-1">
           <Profile />

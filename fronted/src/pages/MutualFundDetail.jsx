@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import axios from "axios";
 
 // ModernCard Component (FULL WIDTH)
@@ -135,7 +135,7 @@ export default function MutualFundDetail() {
   `;
 
   // Flatten nested structure
-  const flattenFunds = (data) => {
+  const flattenFunds = useCallback((data) => {
     const flat = [];
     for (const category in data) {
       const subcategories = data[category];
@@ -153,14 +153,9 @@ export default function MutualFundDetail() {
       }
     }
     return flat;
-  };
-
-  // Fetch on load
-  useEffect(() => {
-    fetchAllFunds();
   }, []);
 
-  const fetchAllFunds = async () => {
+  const fetchAllFunds = useCallback(async () => {
     try {
       const res = await axios.get("http://localhost:5000/mutual-funds/qqq");
       const flatFunds = flattenFunds(res.data);
@@ -174,7 +169,12 @@ export default function MutualFundDetail() {
     } catch (err) {
       console.error("Error fetching mutual funds:", err.message);
     }
-  };
+  }, [flattenFunds]);
+
+  // Fetch on load
+  useEffect(() => {
+    fetchAllFunds();
+  }, [fetchAllFunds]);
 
   // Search
   const handleSearch = async () => {
@@ -423,7 +423,7 @@ export default function MutualFundDetail() {
       </div>
 
       {/* Alphabet Filter */}
-      {/* <div style={{ marginTop: 24, animation: "fadeIn .5s" }}>
+      <div style={{ marginTop: 24, animation: "fadeIn .5s" }}>
         {"ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").map((letter) => (
           <button
             key={letter}
@@ -443,7 +443,7 @@ export default function MutualFundDetail() {
             {letter}
           </button>
         ))}
-      </div> */}
+      </div>
     </div>
   );
 }

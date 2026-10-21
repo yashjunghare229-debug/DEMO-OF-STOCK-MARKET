@@ -143,7 +143,7 @@ app.use("/api/watchlists", WatchlistRoutes);
 
 
 
-mongoose.connect("mongodb://localhost:27017/stockdb")
+mongoose.connect("mongodb+srv://yashtiw13r_db_user:ey9em4VxN8MkjQBn@cluster0.qlblu8l.mongodb.net/stock_market")
   .then(() => console.log("✅ MongoDB connected"))
   .catch(err => console.error("❌ MongoDB connection error:", err));
 
@@ -151,7 +151,7 @@ mongoose.connect("mongodb://localhost:27017/stockdb")
 
 
 
-app.listen(5000, () => console.log('Server started on http://localhost:3000'));
+app.listen(5000, () => console.log('Server started on http://localhost:5001'));
 module.exports = app;
 
 
